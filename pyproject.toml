@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "leela-interp"
+version = "0.0.1"
+readme = "README.md"
+
+dependencies = [
+    "chess @ git+https://github.com/ejnnr/python-chess.git",
+    "zarr",
+    "numpy",
+    "scikit-learn",
+    "einops",
+    "ipykernel",
+    "torch",
+    "tqdm",
+    "matplotlib",
+    "nnsight==0.2.*",
+    "onnx2torch",
+    "pandas",
+    "nbformat",
+    "iceberg-dsl @ git+https://github.com/revalo/iceberg.git",
+    "svgelements",
+]
+
+requires-python = ">=3.10"
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+select = ["E", "W", "F", "I"]
+ignore-init-module-imports = true
