@@ -339,7 +339,7 @@ class HatchedRectangle(ice.Drawable):
         hatched_spacing = self.hatched_spacing
         hatched_thickness = self.hatched_thickness
         hatched_lines = skia.Path()
-        hatched_mult = 2
+        hatched_mult = 4
         x, y = self._border_skia_rect.left(), self._border_skia_rect.top()
         w, h = self._border_skia_rect.width(), self._border_skia_rect.height()
         cx, cy = x + w / 2, y + h / 2
@@ -474,7 +474,7 @@ class PolicyBar(ice.DrawableWithChild):
                 for i, (number_before, number_after) in enumerate(
                     zip(self.numbers, self.numbers_changed)
                 ):
-                    if number_before == number_after:
+                    if abs(number_before - number_after) < 1e-2:
                         continue
 
                     sx, sy = bars[i].relative_bounds.corners[ice.MIDDLE_RIGHT]

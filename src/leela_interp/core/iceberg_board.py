@@ -150,6 +150,10 @@ class IcebergBoard(ice.DrawableWithChild):
                 "square light lastmove": "#cfcfff",
                 "square dark lastmove": "#a0a0ff",
             },
+            # colors={
+            #     "square light": "#edd9b9",
+            #     "square dark": "#b08868",
+            # },
         )
 
         child = ice.SVG(raw_svg=svg)
@@ -201,5 +205,7 @@ class IcebergBoard(ice.DrawableWithChild):
 
         self.set_child(child)
 
-    def square(self, square: chess.Square) -> ice.Rectangle:
+    def square(self, square: chess.Square | str) -> ice.Rectangle:
+        if isinstance(square, str):
+            square = chess.parse_square(square)
         return self._squares[square]
