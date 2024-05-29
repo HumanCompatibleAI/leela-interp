@@ -230,6 +230,21 @@ def plot_percentiles(
     return fig
 
 
+class SkiaPath(ice.Path):
+    skia_path: skia.Path
+    path_style: ice.PathStyle
+
+    def __init__(
+        self,
+        skia_path: skia.Path,
+        path_style: ice.PathStyle,
+    ):
+        self.init_from_fields(skia_path=skia_path, path_style=path_style)
+
+    def setup(self):
+        self.set_path(self.skia_path, self.path_style)
+
+
 class HatchedRectangle(ice.Drawable):
     """A rectangle.
 
@@ -256,6 +271,7 @@ class HatchedRectangle(ice.Drawable):
     hatched_spacing: float = 10
     hatched_thickness: float = 1
     hatched_angle: float = 45
+    partial_end: float = 1.0
 
     def __init__(
         self,
@@ -271,6 +287,7 @@ class HatchedRectangle(ice.Drawable):
         hatched_spacing: float = 10,
         hatched_thickness: float = 1,
         hatched_angle: float = 45,
+        partial_end: float = 1.0,
     ):
         self.init_from_fields(
             rectangle=rectangle,
@@ -285,6 +302,7 @@ class HatchedRectangle(ice.Drawable):
             hatched_spacing=hatched_spacing,
             hatched_thickness=hatched_thickness,
             hatched_angle=hatched_angle,
+            partial_end=partial_end,
         )
 
     def setup(
@@ -348,10 +366,27 @@ class HatchedRectangle(ice.Drawable):
         sy = cy - h / 2 * hatched_mult
         ey = cy + h / 2 * hatched_mult
 
-        for hatch_y in np.arange(sy, ey, hatched_spacing):
+        hatched_ys = np.arange(sy, ey, hatched_spacing)
+
+        # Compute partial ends of all lines.
+        # When partial_end is 1, all lines should have partial_end 1.
+
+        partial_end_thresh = 1 / len(hatched_ys)
+
+        for i, hatch_y in enumerate(hatched_ys):
             # left, top, right, bottom
+            left = sx
+            top = hatch_y - hatched_thickness / 2
+            right = (ex - sx) * max(
+                1, self.partial_end * (i + 1) / len(hatched_ys)
+            ) + sx
+            bottom = hatch_y + hatched_thickness / 2
+
             hatched_lines.addRect(
-                sx, hatch_y - hatched_thickness / 2, ex, hatch_y + hatched_thickness / 2
+                left,
+                top,
+                right,
+                bottom,
             )
 
         hatched_lines.transform(skia.Matrix().setRotate(self.hatched_angle, cx, cy))
@@ -394,7 +429,7 @@ class HatchedRectangle(ice.Drawable):
 class PolicyBar(ice.DrawableWithChild):
     numbers: list[float]
     bar_labels: list[str]
-    numbers_changed: list[float] | None = None
+    numbers_changed: list[float] = None
     bar_width: float = 30
     bar_height: float = 80
     bar_gap: float = 10
@@ -411,6 +446,7 @@ class PolicyBar(ice.DrawableWithChild):
     min_height: float = 0.05
     use_tex: bool = False
     move_scale: float = 1
+    hatched_end: float = 1
 
     def setup(self):
         numbers = [max(number, self.min_height) for number in self.numbers]
@@ -447,6 +483,7 @@ class PolicyBar(ice.DrawableWithChild):
                     border_position=ice.BorderPosition.OUTSIDE,
                     hatched_angle=-45,
                     hatched_spacing=5,
+                    partial_end=self.hatched_end,
                 )
                 for number in numbers_changed
             ]
@@ -474,7 +511,7 @@ class PolicyBar(ice.DrawableWithChild):
                 for i, (number_before, number_after) in enumerate(
                     zip(self.numbers, self.numbers_changed)
                 ):
-                    if abs(number_before - number_after) < 1e-2:
+                    if abs(number_before - number_after) < 2e-2:
                         continue
 
                     sx, sy = bars[i].relative_bounds.corners[ice.MIDDLE_RIGHT]
