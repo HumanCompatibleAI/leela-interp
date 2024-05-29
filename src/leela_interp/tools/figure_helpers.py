@@ -372,14 +372,24 @@ class HatchedRectangle(ice.Drawable):
         # When partial_end is 1, all lines should have partial_end 1.
 
         partial_end_thresh = 1 / len(hatched_ys)
+        line_end_times = np.arange(0, 1, partial_end_thresh)
+        # # Find the interval in line_end_times that self.partial_end falls into
+        # interval_index = (
+        #     np.searchsorted(line_end_times, self.partial_end, side="right") - 1
+        # )
+        # line_end_times[:interval_index] = 1
+        # line_end_times[interval_index + 1:] = 0
+        # interval_value = line_end_times[interval_index]
+        partial_ends = np.clip(
+            (self.partial_end - line_end_times) / partial_end_thresh, 0, 1
+        )
+        # print(partial_ends, self.partial_end)
 
         for i, hatch_y in enumerate(hatched_ys):
             # left, top, right, bottom
             left = sx
             top = hatch_y - hatched_thickness / 2
-            right = (ex - sx) * max(
-                1, self.partial_end * (i + 1) / len(hatched_ys)
-            ) + sx
+            right = (ex - sx) * partial_ends[i] + sx
             bottom = hatch_y + hatched_thickness / 2
 
             hatched_lines.addRect(
