@@ -457,6 +457,7 @@ class PolicyBar(ice.DrawableWithChild):
     use_tex: bool = False
     move_scale: float = 1
     hatched_end: float = 1
+    fixed_width: bool = False
 
     def setup(self):
         numbers = [max(number, self.min_height) for number in self.numbers]
@@ -521,7 +522,7 @@ class PolicyBar(ice.DrawableWithChild):
                 for i, (number_before, number_after) in enumerate(
                     zip(self.numbers, self.numbers_changed)
                 ):
-                    if abs(number_before - number_after) < 2e-2:
+                    if abs(number_before - number_after) < 5e-2:
                         continue
 
                     sx, sy = bars[i].relative_bounds.corners[ice.MIDDLE_RIGHT]
@@ -594,4 +595,14 @@ class PolicyBar(ice.DrawableWithChild):
                     ice.DOWN * self.ellipses_gap,
                 )
 
+        if self.fixed_width:
+            rect = ice.Rectangle(
+                ice.Bounds(
+                    left=-70,
+                    right=self.bar_height + 5,
+                    top=bars_arranged.bounds.top,
+                    bottom=bars_arranged.bounds.bottom,
+                )
+            )
+            bars_arranged += rect
         self.set_child(bars_arranged)

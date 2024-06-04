@@ -1,4 +1,6 @@
-# Lc0 interpretability
+# Evidence of Learned Look-Ahead in a Chess-Playing Neural Network
+
+[**Project page**](https://leela-interp.github.io/) | [**Paper**](https://arxiv.org/abs/2406.00877)
 
 ## Setup
 
@@ -6,7 +8,7 @@
 pip install -e .
 ```
 
-Download the files from (https://figshare.com/s/adc80845c00b67c8fce5) into your
+Download the files from https://figshare.com/s/adc80845c00b67c8fce5 into your
 working directory. (`lc0.onnx` and `interesting_puzzles.pkl` are required for most
 experiments, `lc0-random.onnx` is only required for the probing baseline,
 and `LD2.onnx` and `unfiltered_puzzles.pkl` are only required if you want to explore
@@ -69,3 +71,17 @@ but it might not suit your needs.
 
 ## Known issues
 We've observed `NaN` outputs for Leela on MPS sometimes (but never on CPU or CUDA).
+
+# Citation
+If you find this codebase helpful for your research, please cite our paper:
+
+```
+@misc{jenner2024evidence,
+      title={Evidence of Learned Look-Ahead in a Chess-Playing Neural Network}, 
+      author={Erik Jenner and Shreyas Kapur and Vasil Georgiev and Cameron Allen and Scott Emmons and Stuart Russell},
+      year={2024},
+      eprint={2406.00877},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
