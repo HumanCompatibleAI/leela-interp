@@ -215,9 +215,13 @@ class LeelaBoard:
 
         return leela_board
 
-    def copy(self, history=7):
+    def copy(self, history=8):
         """Note! Currently the copy constructor uses pc_board.copy(stack=False), which
         makes pops impossible
+
+        history: number of positions to keep, including the current one.
+        lcz_features encodes the last 8 positions, so the default keeps all of them;
+        a smaller value zero-fills the oldest ones in the network input.
         """
         cls = type(self)
         copied = cls.__new__(cls)
